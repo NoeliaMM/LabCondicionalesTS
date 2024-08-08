@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LabCondicionalesTS</title>
+  </head>
+  <body>
+    <div id="contenedor-cartas">
+      <img  id="carta" src="https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg" alt="Carta boca abajo">
+    </div>
+    <div class="contenedor_puntuacion" style="display: inline;">
+     <label class="puntuacion-label">Puntuación: </label> <input readonly id="puntuacion" value="0"></input>
+   </div>
+    <div id="contenedor_botones">
+    
+      <button class="button" id="pedirCarta">Pide carta</button>
+    </div>
+
+    <h3 id="resultado"></h3>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
