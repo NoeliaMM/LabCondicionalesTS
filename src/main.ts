@@ -110,10 +110,19 @@ const mapearValorCarta = (carta: number): number => {
 };
 
 const muestraCarta = (carta: number): void => {
-  const imgCarta = document.getElementById("carta");
-  if (imgCarta && imgCarta instanceof HTMLImageElement) {
+  const contenedorCartas = document.getElementById("contenedor-cartas");
+
+  const imgCarta = document.createElement("img");
+  const carta1 = document.getElementById("carta_boca_abajo");
+  if (carta1 && carta1 instanceof HTMLImageElement) {
+    carta1.style.visibility = "hidden";    
+    carta1.style.width = "0px";
+  }
+
+  if (contenedorCartas && contenedorCartas instanceof HTMLElement) {
     imgCarta.src = `https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/${mapeoCarta[carta]}-copas.jpg`;
     imgCarta.alt = `${carta} de copas`;
+    contenedorCartas.appendChild(imgCarta);
   } else {
     console.error(`No se ha encontrado el elemento con id carta`);
   }
