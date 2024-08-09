@@ -25,7 +25,7 @@ a:hover {
 
 body {
   display: flex;
-  flex-direction: column; /* Apilar verticalmente */
+  flex-direction: column; 
   justify-content: center;
   align-items: center;
   min-height: 100vh;
@@ -99,6 +99,12 @@ button:focus-visible {
 
 /* Codigo tarea Lab */
 
+.title{
+  display: flex;
+  color:rgb(188, 18, 18);
+  justify-content: center;
+}
+
 #contenedor_botones {
   display: flex;
   gap: 10px;
@@ -107,6 +113,7 @@ button:focus-visible {
 #contenedor-cartas {
   display: flex;
   justify-content: center;
+  vertical-align: middle;
   
 }
 .contenedor_puntuacion {
@@ -124,4 +131,6 @@ button:focus-visible {
   border:none;
   font-weight: bold;
   font-size: 26px;
+  width: 50px;
+  margin-top: 20px;
 }
