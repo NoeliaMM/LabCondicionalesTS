@@ -1,25 +1,9 @@
 import "./style.css";
 
 let puntos: number = 0;
-let cartas_excluidas: Array<number> = [8, 9];
+let cartasGastadas: Array<number> = [];
 const min: number = 1;
 const max: number = 12;
-type OpcionesCartas = {
-  [key: number]: string;
-};
-
-const mapeoCarta: OpcionesCartas = {
-  1: "1_as",
-  2: "2_dos",
-  3: "3_tres",
-  4: "4_cuatro",
-  5: "5_cinco",
-  6: "6_seis",
-  7: "7_siete",
-  10: "10_sota",
-  11: "11_caballo",
-  12: "12_rey",
-};
 
 type Estado =
   | "CONSERVADOR"
@@ -28,11 +12,6 @@ type Estado =
   | "CLAVADO"
   | "PASADO"
   | "GAME_OVER";
-
-const PUNTUACION_CONSERVADORA: number = 4;
-const PUNTUACION_CANGUELO: number = 5;
-const PUNTUACION_CASI: number = 6;
-const PUNTUACION_CLAVADO: number = 7.5;
 
 const mostrarMensaje = (estado: Estado) => {
   let mensaje = "";
@@ -49,9 +28,6 @@ const mostrarMensaje = (estado: Estado) => {
     case "CLAVADO":
       mensaje = `¡ Lo has clavado! ¡Enhorabuena! 🎉🎉🎉`;
       break;
-    case "GAME_OVER":
-      mensaje = `🪦 Partida terminada`;
-      break;
     case "PASADO":
       mensaje = `Te has pasado 😬`;
       break;
@@ -63,103 +39,207 @@ const mostrarMensaje = (estado: Estado) => {
   if (resultado) {
     resultado.innerHTML = mensaje;
   }
+  const resultadoFin = document.getElementById("mensajeFin");
+  if (resultadoFin) {
+    resultadoFin.innerHTML = `🪦 Partida terminada`;
+  }
+};
+
+const finalizarPartida = () => {
+  if (puntos === 7.5) {
+    mostrarMensaje("CLAVADO");
+  }
+
+  if (puntos > 7.5) {
+    mostrarMensaje("PASADO");
+  }
+
+  gestionarFin();
 };
 
 const comprobarPuntuacion = (): void => {
-  finPartida();
-  switch (true) {
-    case puntos === PUNTUACION_CLAVADO:
-      mostrarMensaje("CLAVADO");
-      break;
-
-    case puntos === PUNTUACION_CONSERVADORA:
-      mostrarMensaje("CONSERVADOR");
-      break;
-    case puntos === PUNTUACION_CASI:
-      mostrarMensaje("CASI");
-      break;
-
-    case puntos === PUNTUACION_CANGUELO:
-      mostrarMensaje("CANGUELO");
-      break;
-
-    case puntos > PUNTUACION_CLAVADO:
-      mostrarMensaje("PASADO");
-      break;
-
-    default:
-      mostrarMensaje("GAME_OVER");
-      break;
+  if (puntos === 7.5) {
+    mostrarMensaje("CLAVADO");
   }
+  if (puntos <= 4) {
+    mostrarMensaje("CONSERVADOR");
+  }
+  if (puntos > 4 && puntos <= 5) {
+    mostrarMensaje("CANGUELO");
+  }
+  if (puntos > 5 && puntos <= 7.5) {
+    mostrarMensaje("CASI");
+  }
+  if (puntos > 7.5) {
+    mostrarMensaje("PASADO");
+  }
+
+  gestionarFin();
 };
 
-const finPartida = (): void => {
-  if (btnPedirCarta && btnPedirCarta instanceof HTMLButtonElement) {
+const gestionarFin = (): void => {
+  if (
+    btnPedirCarta !== null &&
+    btnPedirCarta !== undefined &&
+    btnPedirCarta instanceof HTMLButtonElement
+  ) {
     btnPedirCarta.disabled = true;
   }
-  if (btnPararPartida && btnPararPartida instanceof HTMLButtonElement) {
+  if (
+    btnPararPartida !== null &&
+    btnPararPartida !== undefined &&
+    btnPararPartida instanceof HTMLButtonElement
+  ) {
     btnPararPartida.disabled = true;
   }
 };
 
-const mapearValorCarta = (carta: number): number => {
-  if ([10, 11, 12].includes(carta)) {
-    return 0.5;
-  }
-  return carta;
-};
-
-const muestraCarta = (carta: number): void => {
+const muestraCarta = (urlCarta: string): void => {
   const contenedorCartas = document.getElementById("contenedor-cartas");
-
   const imgCarta = document.createElement("img");
   const carta1 = document.getElementById("carta_boca_abajo");
-  if (carta1 && carta1 instanceof HTMLImageElement) {
-    carta1.style.visibility = "hidden";    
-    carta1.style.width = "0px";
-  }
 
-  if (contenedorCartas && contenedorCartas instanceof HTMLElement) {
-    imgCarta.src = `https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/${mapeoCarta[carta]}-copas.jpg`;
-    imgCarta.alt = `${carta} de copas`;
+  if (
+    contenedorCartas !== null &&
+    contenedorCartas !== undefined &&
+    contenedorCartas instanceof HTMLElement
+  ) {
+    imgCarta.src = urlCarta;
     contenedorCartas.appendChild(imgCarta);
   } else {
     console.error(`No se ha encontrado el elemento con id carta`);
+  }
+  if (
+    carta1 !== null &&
+    carta1 !== undefined &&
+    carta1 instanceof HTMLImageElement
+  ) {
+    carta1.style.visibility = "hidden";
+    carta1.style.width = "0px";
   }
 };
 
 const muestraPuntuacion = () => {
   const puntuacionItem = document.getElementById("puntuacion");
 
-  if (puntuacionItem && puntuacionItem instanceof HTMLInputElement) {
+  if (
+    puntuacionItem != null &&
+    puntuacionItem !== undefined &&
+    puntuacionItem instanceof HTMLInputElement
+  ) {
     puntuacionItem.value = puntos.toString();
   } else {
     console.error(`No se ha encontrado el elemento con id puntuacion`);
   }
 };
 
-const dameCarta = (): void => {
-  const cartaRandom = Math.floor(Math.random() * (max - min + 1)) + min;
-  if (cartas_excluidas.includes(cartaRandom)) {
-    dameCarta();
-    return;
-  }
-  cartas_excluidas.push(cartaRandom);
+const calcularNumeroAleatorio = ():number => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
-  puntos += mapearValorCarta(cartaRandom);
-  muestraCarta(cartaRandom);
-  muestraPuntuacion();
-  if (puntos >= PUNTUACION_CLAVADO) {
-    comprobarPuntuacion();
+const calcularNumeroCarta = (numeroAleatorio: number) => {
+  if (numeroAleatorio > 7 && numeroAleatorio < 10) {
+    return numeroAleatorio + 2;
+  }
+  return numeroAleatorio;
+};
+
+const obtenerUrlCarta = (carta: number) => {
+  switch (carta) {
+    case 1:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/1_as-copas.jpg";
+
+    case 2:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/2_dos-copas.jpg";
+
+    case 3:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/3_tres-copas.jpg";
+
+    case 4:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/4_cuatro-copas.jpg";
+
+    case 5:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/5_cinco-copas.jpg";
+
+    case 6:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/6_seis-copas.jpg";
+
+    case 7:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/7_siete-copas.jpg";
+
+    case 10:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/10_sota-copas.jpg";
+
+    case 11:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/11_caballo-copas.jpg";
+
+    case 12:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/12_rey-copas.jpg";
+
+    default:
+      return "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg";
+  }
+};
+
+const obtenerPuntosCarta = (carta: number) => {
+  if (carta > 7) {
+    return 0.5;
+  }
+  return carta;
+};
+
+const sumarPuntos = (puntuacion: number) => {
+  return puntos + puntuacion;
+};
+
+const actualizarPuntos = (puntosActuales: number) => {
+  puntos = puntosActuales;
+};
+
+const dameCarta = (): void => {
+  const numeroAleatorio = calcularNumeroAleatorio();
+  if(cartasGastadas.includes(numeroAleatorio)){
+    dameCarta();
+  }else{
+    cartasGastadas.push(numeroAleatorio);
+    const carta = calcularNumeroCarta(numeroAleatorio);
+    const urlCarta = obtenerUrlCarta(carta);
+    muestraCarta(urlCarta);
+    const puntosCarta = obtenerPuntosCarta(carta);
+    const puntosSumados = sumarPuntos(puntosCarta);
+    actualizarPuntos(puntosSumados);
+    muestraPuntuacion();
+    if (puntos >= 7.5) {
+      finalizarPartida();
+    }
   }
 };
 
 document.addEventListener("DOMContentLoaded", muestraPuntuacion);
+
 const btnPedirCarta = document.getElementById("pedirCarta");
-btnPedirCarta?.addEventListener("click", dameCarta);
+if (
+  btnPedirCarta !== null &&
+  btnPedirCarta !== undefined &&
+  btnPedirCarta instanceof HTMLButtonElement
+) {
+  btnPedirCarta.addEventListener("click", dameCarta);
+}
 
 const btnPararPartida = document.getElementById("pararPartida");
-btnPararPartida?.addEventListener("click", comprobarPuntuacion);
+if (
+  btnPararPartida !== null &&
+  btnPararPartida !== undefined &&
+  btnPararPartida instanceof HTMLButtonElement
+) {
+  btnPararPartida.addEventListener("click", comprobarPuntuacion);
+}
 
 const btnReset = document.getElementById("reset");
-btnReset?.addEventListener("click", () => location.reload());
+if (
+  btnReset !== null &&
+  btnReset !== undefined &&
+  btnReset instanceof HTMLButtonElement
+) {
+  btnReset.addEventListener("click", () => location.reload());
+}
