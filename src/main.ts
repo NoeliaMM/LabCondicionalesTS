@@ -2,8 +2,6 @@ import "./style.css";
 
 let puntos: number = 0;
 let cartasGastadas: Array<number> = [];
-const min: number = 1;
-const max: number = 12;
 
 type Estado =
   | "CONSERVADOR"
@@ -133,12 +131,9 @@ const muestraPuntuacion = () => {
   }
 };
 
-const calcularNumeroAleatorio = ():number => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const calcularNumeroCarta = (numeroAleatorio: number) => {
-  if (numeroAleatorio > 7 && numeroAleatorio < 10) {
+const calcularNumeroCarta = () => {
+  const numeroAleatorio = Math.floor(Math.random() * 10) + 1;
+  if (numeroAleatorio > 7 ) {
     return numeroAleatorio + 2;
   }
   return numeroAleatorio;
@@ -197,12 +192,11 @@ const actualizarPuntos = (puntosActuales: number) => {
 };
 
 const dameCarta = (): void => {
-  const numeroAleatorio = calcularNumeroAleatorio();
-  if(cartasGastadas.includes(numeroAleatorio)){
+  const carta = calcularNumeroCarta();
+  if(cartasGastadas.includes(carta)){
     dameCarta();
   }else{
-    cartasGastadas.push(numeroAleatorio);
-    const carta = calcularNumeroCarta(numeroAleatorio);
+    cartasGastadas.push(carta);    
     const urlCarta = obtenerUrlCarta(carta);
     muestraCarta(urlCarta);
     const puntosCarta = obtenerPuntosCarta(carta);
