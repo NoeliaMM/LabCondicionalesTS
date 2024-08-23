@@ -9,7 +9,8 @@ type Estado =
   | "CASI"
   | "CLAVADO"
   | "PASADO"
-  | "GAME_OVER";
+  | "GAME_OVER"
+  | "POR_DEBAJO";
 
 const mostrarMensaje = (estado: Estado) => {
   let mensaje = "";
@@ -43,34 +44,10 @@ const mostrarMensaje = (estado: Estado) => {
   }
 };
 
-const finalizarPartida = () => {
-  if (puntos === 7.5) {
-    mostrarMensaje("CLAVADO");
-  }
-
-  if (puntos > 7.5) {
-    mostrarMensaje("PASADO");
-  }
-
-  gestionarFin();
-};
-
 const comprobarPuntuacion = (): void => {
-  if (puntos === 7.5) {
-    mostrarMensaje("CLAVADO");
-  }
-  if (puntos <= 4) {
-    mostrarMensaje("CONSERVADOR");
-  }
-  if (puntos > 4 && puntos <= 5) {
-    mostrarMensaje("CANGUELO");
-  }
-  if (puntos > 5 && puntos <= 7.5) {
-    mostrarMensaje("CASI");
-  }
-  if (puntos > 7.5) {
-    mostrarMensaje("PASADO");
-  }
+  const estadoPartida : Estado = obtenerEstadoPartida(puntos);
+
+  mostrarMensaje(estadoPartida);
 
   gestionarFin();
 };
@@ -190,6 +167,25 @@ const sumarPuntos = (puntuacion: number) => {
 const actualizarPuntos = (puntosActuales: number) => {
   puntos = puntosActuales;
 };
+export const obtenerEstadoPartida=(puntos:number): Estado =>{
+
+  if (puntos === 7.5) {
+    return "CLAVADO";
+  }
+  if (puntos <= 4) {
+    return "CONSERVADOR";
+  }
+  if (puntos > 4 && puntos <= 5) {
+    return "CANGUELO";
+  }
+  if (puntos > 5 && puntos <= 7.5) {
+    return "CASI";
+  }
+  if (puntos > 7.5) {
+    return "PASADO";
+  }
+  return "POR_DEBAJO";
+}
 
 const dameCarta = (): void => {
   const carta = calcularNumeroCarta();
@@ -204,7 +200,7 @@ const dameCarta = (): void => {
     actualizarPuntos(puntosSumados);
     muestraPuntuacion();
     if (puntos >= 7.5) {
-      finalizarPartida();
+      comprobarPuntuacion();
     }
   }
 };
